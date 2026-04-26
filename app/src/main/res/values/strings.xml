@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Volume replacer</string>
+    <string name="accessibility_service_description">Allows the overlay button to take screenshots and perform other global actions.</string>
 </resources>

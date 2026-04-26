@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Accessibility service configuration placeholder.
-     Adjust eventTypes, feedbackType, flags as needed. -->
+<!-- Accessibility service configuration for screenshot / global-action support.
+     This service does not observe UI events; it only performs global actions. -->
 <accessibility-service xmlns:android="http://schemas.android.com/apk/res/android"
-    android:description="@string/app_name"
-    android:accessibilityEventTypes="typeAllMask"
+    android:description="@string/accessibility_service_description"
+    android:accessibilityEventTypes=""
     android:accessibilityFeedbackType="feedbackGeneric"
     android:canRetrieveWindowContent="false"
+    android:canPerformGestures="true"
     android:notificationTimeout="100" />
 
