@@ -38,6 +38,7 @@ class VolumeAccessibilityService : AccessibilityService() {
 
     companion object {
         /** Singleton reference set while the service is connected. */
+        @Volatile
         var instance: VolumeAccessibilityService? = null
             private set
     }
