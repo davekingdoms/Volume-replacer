@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
 import android.provider.Settings
+import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -23,7 +24,6 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlin.math.abs
 
 /**
@@ -42,6 +42,7 @@ class OverlayService : Service() {
     private lateinit var preferencesRepository: PreferencesRepository
 
     companion object {
+        private const val TAG = "OverlayService"
         private const val CHANNEL_ID = "overlay_channel"
         private const val NOTIFICATION_ID = 1
         private const val OVERLAY_SIZE_DP = 48
@@ -56,7 +57,7 @@ class OverlayService : Service() {
         preferencesRepository = PreferencesRepository(applicationContext)
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
-        createOverlay()
+        serviceScope.launch { createOverlay() }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -95,7 +96,7 @@ class OverlayService : Service() {
 
     // ── Overlay window ──────────────────────────────────────────────────
 
-    private fun createOverlay() {
+    private suspend fun createOverlay() {
         if (overlayView != null) return // already created
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
@@ -117,7 +118,7 @@ class OverlayService : Service() {
         }
 
         // Restore persisted position
-        val prefs = runBlocking { preferencesRepository.userPreferencesFlow.first() }
+        val prefs = preferencesRepository.userPreferencesFlow.first()
         val startX = if (prefs.overlayX >= 0) prefs.overlayX else 0
         val startY = if (prefs.overlayY >= 0) prefs.overlayY else 200
 
@@ -143,8 +144,8 @@ class OverlayService : Service() {
         overlayView?.let { view ->
             try {
                 windowManager?.removeView(view)
-            } catch (_: IllegalArgumentException) {
-                // View already removed — safe to ignore
+            } catch (e: IllegalArgumentException) {
+                Log.w(TAG, "Overlay view was already removed", e)
             }
         }
         overlayView = null
