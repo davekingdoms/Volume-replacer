@@ -152,7 +152,7 @@ L'app principale deve rimanere **molto piccola**.
 App personale ottimizzata per **Pixel 7a**.
 
 Scelta consigliata:
-- `minSdk = 31`
+- `minSdk = 36`
 - `targetSdk =` ultima stabile disponibile durante lo sviluppo
 
 ---

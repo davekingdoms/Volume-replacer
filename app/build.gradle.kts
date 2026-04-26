@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.volumereplacer"
+    namespace = "com.davekingdoms.pixelvolumehelper"
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -12,7 +12,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.volumereplacer"
+        applicationId = "com.davekingdoms.pixelvolumehelper"
         minSdk = 36
         targetSdk = 36
         versionCode = 1
