@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
     <!-- Foreground service permission -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- Foreground service type for special use -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
     <application
         android:name=".VolumeReplacerApp"
@@ -33,7 +35,12 @@
         <!-- Overlay foreground service -->
         <service
             android:name=".overlay.OverlayService"
-            android:exported="false" />
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Floating overlay button for volume control and screenshot" />
+        </service>
 
         <!-- Accessibility service -->
         <service

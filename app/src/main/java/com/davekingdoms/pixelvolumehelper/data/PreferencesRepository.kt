@@ -3,6 +3,7 @@ package com.davekingdoms.pixelvolumehelper.data
 import android.content.Context
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
@@ -28,6 +29,8 @@ class PreferencesRepository(private val context: Context) {
         val SELECTED_STREAM = stringPreferencesKey("selected_stream")
         val OVERLAY_ENABLED = booleanPreferencesKey("overlay_enabled")
         val OVERLAY_POSITION = stringPreferencesKey("overlay_position")
+        val OVERLAY_X = intPreferencesKey("overlay_x")
+        val OVERLAY_Y = intPreferencesKey("overlay_y")
         val TAP_ACTION = stringPreferencesKey("tap_action")
         val LONG_PRESS_ACTION = stringPreferencesKey("long_press_action")
     }
@@ -44,6 +47,8 @@ class PreferencesRepository(private val context: Context) {
             overlayPosition = OverlayPosition.fromKey(
                 prefs[Keys.OVERLAY_POSITION] ?: OverlayPosition.BOTTOM_RIGHT.name,
             ),
+            overlayX = prefs[Keys.OVERLAY_X] ?: -1,
+            overlayY = prefs[Keys.OVERLAY_Y] ?: -1,
             tapAction = OverlayAction.fromKey(
                 prefs[Keys.TAP_ACTION] ?: OverlayAction.OpenPanel.key,
             ),
@@ -65,6 +70,13 @@ class PreferencesRepository(private val context: Context) {
 
     suspend fun setOverlayPosition(position: OverlayPosition) {
         context.dataStore.edit { it[Keys.OVERLAY_POSITION] = position.name }
+    }
+
+    suspend fun setOverlayXY(x: Int, y: Int) {
+        context.dataStore.edit {
+            it[Keys.OVERLAY_X] = x
+            it[Keys.OVERLAY_Y] = y
+        }
     }
 
     suspend fun setTapAction(action: OverlayAction) {
