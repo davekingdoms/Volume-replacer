@@ -240,6 +240,11 @@ class OverlayService : Service() {
      * Refresh the cached preferences and dispatch the action selected by
      * [selector]. Reading from DataStore is suspending, so the dispatch
      * happens in a coroutine on the main dispatcher.
+     *
+     * Each invocation dispatches against its own locally-scoped [prefs]
+     * snapshot, so concurrent taps cannot cross-contaminate each other's
+     * action; [cachedPreferences] is only used as a fallback when reading
+     * preferences fails.
      */
     private fun runConfiguredAction(selector: (UserPreferences) -> OverlayAction) {
         serviceScope.launch {

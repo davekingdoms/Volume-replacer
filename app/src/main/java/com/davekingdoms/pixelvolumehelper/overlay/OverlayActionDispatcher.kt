@@ -72,8 +72,12 @@ class OverlayActionDispatcher(
                 context.startActivity(intent)
             },
             takeScreenshot = {
-                accessibilityProvider()?.takeScreenshot()
-                    ?: Log.w(TAG, "Screenshot requested but accessibility service is not connected")
+                val service = accessibilityProvider()
+                if (service != null) {
+                    service.takeScreenshot()
+                } else {
+                    Log.w(TAG, "Screenshot requested but accessibility service is not connected")
+                }
             },
             volumeUp = { volumeController.increaseVolume(streamProvider(), showUi = true) },
             volumeDown = { volumeController.decreaseVolume(streamProvider(), showUi = true) },
