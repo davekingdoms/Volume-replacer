@@ -40,6 +40,11 @@ class AudioManagerWrapper(private val context: Context) {
         audioManager.adjustStreamVolume(stream.streamType, AudioManager.ADJUST_LOWER, flags)
     }
 
+    /** Toggle the mute state of [stream]. */
+    fun toggleMute(stream: AudioStream, flags: Int = 0) {
+        audioManager.adjustStreamVolume(stream.streamType, AudioManager.ADJUST_TOGGLE_MUTE, flags)
+    }
+
     /** Current ringer mode (NORMAL / VIBRATE / SILENT). */
     fun getRingerMode(): Int = audioManager.ringerMode
 
