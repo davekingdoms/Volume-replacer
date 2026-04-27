@@ -2,6 +2,7 @@ package com.davekingdoms.pixelvolumehelper.widget
 
 import android.content.Context
 import android.media.AudioManager
+import android.util.Log
 import androidx.glance.GlanceId
 import androidx.glance.action.ActionParameters
 import androidx.glance.appwidget.action.ActionCallback
@@ -9,6 +10,8 @@ import com.davekingdoms.pixelvolumehelper.audio.VolumeController
 import com.davekingdoms.pixelvolumehelper.data.PreferencesRepository
 import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
 import kotlinx.coroutines.flow.first
+
+private const val TAG = "VolumeWidget"
 
 /**
  * [ActionParameters.Key] definitions used by widget action callbacks.
@@ -43,6 +46,7 @@ class SetRingerModeAction : ActionCallback {
             return
         }
         runCatching { controller.setRingerMode(mode) }
+            .onFailure { Log.w(TAG, "setRingerMode($mode) failed", it) }
         VolumeWidget().update(context, glanceId)
     }
 }
@@ -59,6 +63,7 @@ class IncreaseVolumeAction : ActionCallback {
         val stream = PreferencesRepository(context)
             .userPreferencesFlow.first().selectedStream
         runCatching { VolumeController(context).increaseVolume(stream) }
+            .onFailure { Log.w(TAG, "increaseVolume($stream) failed", it) }
         VolumeWidget().update(context, glanceId)
     }
 }
@@ -75,6 +80,7 @@ class DecreaseVolumeAction : ActionCallback {
         val stream = PreferencesRepository(context)
             .userPreferencesFlow.first().selectedStream
         runCatching { VolumeController(context).decreaseVolume(stream) }
+            .onFailure { Log.w(TAG, "decreaseVolume($stream) failed", it) }
         VolumeWidget().update(context, glanceId)
     }
 }
