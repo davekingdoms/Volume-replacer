@@ -7,7 +7,6 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.PixelFormat
 import android.os.IBinder
-import android.provider.Settings
 import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
@@ -16,8 +15,9 @@ import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.ImageView
 import com.davekingdoms.pixelvolumehelper.R
-import com.davekingdoms.pixelvolumehelper.accessibility.VolumeAccessibilityService
 import com.davekingdoms.pixelvolumehelper.data.PreferencesRepository
+import com.davekingdoms.pixelvolumehelper.data.model.OverlayAction
+import com.davekingdoms.pixelvolumehelper.data.model.UserPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -30,9 +30,9 @@ import kotlin.math.abs
  * Foreground service that draws a volume-control overlay on top of other apps.
  * Requires SYSTEM_ALERT_WINDOW permission.
  *
- * - Tap opens the volume panel via [Settings.Panel.ACTION_VOLUME].
- * - Long press triggers a screenshot via [VolumeAccessibilityService].
- * - The overlay is draggable; the final position is persisted.
+ * Tap and long-press behavior are user-configurable via [UserPreferences.tapAction]
+ * and [UserPreferences.longPressAction] and are dispatched through
+ * [OverlayActionDispatcher]. The overlay is draggable; the final position is persisted.
  */
 class OverlayService : Service() {
 
@@ -40,6 +40,11 @@ class OverlayService : Service() {
     private var windowManager: WindowManager? = null
     private var overlayView: View? = null
     private lateinit var preferencesRepository: PreferencesRepository
+    private lateinit var actionDispatcher: OverlayActionDispatcher
+
+    /** Latest snapshot of preferences, refreshed before each action. */
+    @Volatile
+    private var cachedPreferences: UserPreferences = UserPreferences()
 
     companion object {
         private const val TAG = "OverlayService"
@@ -55,6 +60,10 @@ class OverlayService : Service() {
     override fun onCreate() {
         super.onCreate()
         preferencesRepository = PreferencesRepository(applicationContext)
+        actionDispatcher = OverlayActionDispatcher.forContext(
+            context = applicationContext,
+            streamProvider = { cachedPreferences.selectedStream },
+        )
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
         serviceScope.launch { createOverlay() }
@@ -119,6 +128,7 @@ class OverlayService : Service() {
 
         // Restore persisted position
         val prefs = preferencesRepository.userPreferencesFlow.first()
+        cachedPreferences = prefs
         val startX = if (prefs.overlayX >= 0) prefs.overlayX else 0
         val startY = if (prefs.overlayY >= 0) prefs.overlayY else 200
 
@@ -219,20 +229,28 @@ class OverlayService : Service() {
     // ── Actions ─────────────────────────────────────────────────────────
 
     private fun onTap() {
-        try {
-            val intent = Intent(Settings.Panel.ACTION_VOLUME)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            startActivity(intent)
-        } catch (_: Exception) {
-            // Graceful failure if the panel cannot be opened
-        }
+        runConfiguredAction { it.tapAction }
     }
 
     private fun onLongPress() {
-        try {
-            VolumeAccessibilityService.instance?.takeScreenshot()
-        } catch (_: Exception) {
-            // Graceful failure if accessibility service is not available
+        runConfiguredAction { it.longPressAction }
+    }
+
+    /**
+     * Refresh the cached preferences and dispatch the action selected by
+     * [selector]. Reading from DataStore is suspending, so the dispatch
+     * happens in a coroutine on the main dispatcher.
+     */
+    private fun runConfiguredAction(selector: (UserPreferences) -> OverlayAction) {
+        serviceScope.launch {
+            val prefs = try {
+                preferencesRepository.userPreferencesFlow.first()
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to read preferences; using last known snapshot", e)
+                cachedPreferences
+            }
+            cachedPreferences = prefs
+            actionDispatcher.dispatch(selector(prefs))
         }
     }
 

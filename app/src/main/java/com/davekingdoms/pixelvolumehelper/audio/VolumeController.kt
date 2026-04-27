@@ -59,6 +59,12 @@ class VolumeController(private val context: Context) {
         wrapper.lowerVolume(stream, flags)
     }
 
+    /** Toggle mute on [stream]. */
+    fun toggleMute(stream: AudioStream, showUi: Boolean = false) {
+        val flags = if (showUi) AudioManager.FLAG_SHOW_UI else 0
+        wrapper.toggleMute(stream, flags)
+    }
+
     // ── Ringer mode ─────────────────────────────────────────────────────
 
     /**
