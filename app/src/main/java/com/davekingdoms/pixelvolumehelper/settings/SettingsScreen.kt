@@ -37,7 +37,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
 import com.davekingdoms.pixelvolumehelper.data.model.OverlayAction
-import com.davekingdoms.pixelvolumehelper.data.model.OverlayPosition
 
 /**
  * Settings screen exposing permission status, core behavior preferences,
@@ -133,16 +132,6 @@ fun SettingsScreen(
                 onSelect = { label ->
                     OverlayAction.entries().firstOrNull { it.label == label }
                         ?.let { viewModel.setLongPressAction(it) }
-                },
-            )
-
-            DropdownRow(
-                label = "Overlay Position",
-                selected = prefs.overlayPosition.label,
-                options = OverlayPosition.entries.map { it.label },
-                onSelect = { label ->
-                    OverlayPosition.entries.firstOrNull { it.label == label }
-                        ?.let { viewModel.setOverlayPosition(it) }
                 },
             )
 

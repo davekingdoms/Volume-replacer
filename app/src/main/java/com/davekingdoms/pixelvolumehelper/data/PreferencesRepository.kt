@@ -8,7 +8,6 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
 import com.davekingdoms.pixelvolumehelper.data.model.OverlayAction
-import com.davekingdoms.pixelvolumehelper.data.model.OverlayPosition
 import com.davekingdoms.pixelvolumehelper.data.model.UserPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -28,7 +27,6 @@ class PreferencesRepository(private val context: Context) {
     private object Keys {
         val SELECTED_STREAM = stringPreferencesKey("selected_stream")
         val OVERLAY_ENABLED = booleanPreferencesKey("overlay_enabled")
-        val OVERLAY_POSITION = stringPreferencesKey("overlay_position")
         val OVERLAY_X = intPreferencesKey("overlay_x")
         val OVERLAY_Y = intPreferencesKey("overlay_y")
         val TAP_ACTION = stringPreferencesKey("tap_action")
@@ -44,9 +42,6 @@ class PreferencesRepository(private val context: Context) {
                 prefs[Keys.SELECTED_STREAM] ?: AudioStream.MUSIC.name,
             ),
             overlayEnabled = prefs[Keys.OVERLAY_ENABLED] ?: false,
-            overlayPosition = OverlayPosition.fromKey(
-                prefs[Keys.OVERLAY_POSITION] ?: OverlayPosition.BOTTOM_RIGHT.name,
-            ),
             overlayX = prefs[Keys.OVERLAY_X] ?: -1,
             overlayY = prefs[Keys.OVERLAY_Y] ?: -1,
             tapAction = OverlayAction.fromKey(
@@ -66,10 +61,6 @@ class PreferencesRepository(private val context: Context) {
 
     suspend fun setOverlayEnabled(enabled: Boolean) {
         context.dataStore.edit { it[Keys.OVERLAY_ENABLED] = enabled }
-    }
-
-    suspend fun setOverlayPosition(position: OverlayPosition) {
-        context.dataStore.edit { it[Keys.OVERLAY_POSITION] = position.name }
     }
 
     suspend fun setOverlayXY(x: Int, y: Int) {
