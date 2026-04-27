@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Glance AppWidget provider info placeholder.
-     Uncomment the receiver in AndroidManifest when ready. -->
+<!--
+  Glance AppWidget provider for VolumeWidget.
+
+  Sized for the 6×3 grid: three buttons across in the top/bottom rows means
+  the widget needs to be wide enough that each cell has a usable tap target
+  (~48dp × 3 + paddings/spacers). Three rows of ~44–56dp + spacers/padding
+  give the minimum height. Resizable so users can stretch it on the launcher.
+-->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:initialLayout="@layout/glance_default_loading_layout"
-    android:minWidth="110dp"
-    android:minHeight="40dp"
+    android:minWidth="250dp"
+    android:minHeight="180dp"
+    android:targetCellWidth="4"
+    android:targetCellHeight="3"
     android:resizeMode="horizontal|vertical"
-    android:updatePeriodMillis="1800000"
+    android:updatePeriodMillis="0"
     android:widgetCategory="home_screen"
-    android:description="@string/app_name" />
-
+    android:description="@string/widget_description" />

@@ -76,6 +76,16 @@ class VolumeController(private val context: Context) {
         wrapper.setRingerMode(next)
     }
 
+    /**
+     * Set the ringer mode directly (NORMAL / VIBRATE / SILENT).
+     *
+     * Switching to [AudioManager.RINGER_MODE_SILENT] requires notification-
+     * policy access on API 23+; call [hasNotificationPolicyAccess] first.
+     */
+    fun setRingerMode(mode: Int) {
+        wrapper.setRingerMode(mode)
+    }
+
     /** Current ringer mode constant ([AudioManager.RINGER_MODE_NORMAL], …). */
     fun getRingerMode(): Int = wrapper.getRingerMode()
 
