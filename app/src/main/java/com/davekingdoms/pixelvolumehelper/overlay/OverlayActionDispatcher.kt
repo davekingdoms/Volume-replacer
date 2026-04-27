@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.provider.Settings
 import android.util.Log
+import android.widget.Toast
 import com.davekingdoms.pixelvolumehelper.accessibility.VolumeAccessibilityService
 import com.davekingdoms.pixelvolumehelper.audio.VolumeController
 import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
@@ -65,6 +66,9 @@ class OverlayActionDispatcher(
             streamProvider: () -> AudioStream,
             volumeController: VolumeController = VolumeController(context),
             accessibilityProvider: () -> VolumeAccessibilityService? = { VolumeAccessibilityService.instance },
+            onUnavailable: (String) -> Unit = { message ->
+                Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+            },
         ): OverlayActionDispatcher = OverlayActionDispatcher(
             openPanel = {
                 val intent = Intent(Settings.Panel.ACTION_VOLUME)
@@ -77,6 +81,7 @@ class OverlayActionDispatcher(
                     service.takeScreenshot()
                 } else {
                     Log.w(TAG, "Screenshot requested but accessibility service is not connected")
+                    onUnavailable("Accessibility service not connected – enable it in Settings")
                 }
             },
             volumeUp = { volumeController.increaseVolume(streamProvider(), showUi = true) },
@@ -88,6 +93,7 @@ class OverlayActionDispatcher(
                     volumeController.cycleRingerMode()
                 } else {
                     Log.w(TAG, "CycleProfile skipped: notification policy access not granted")
+                    onUnavailable("Notification policy access not granted – enable Do Not Disturb Access in Settings")
                 }
             },
         )

@@ -7,6 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.PowerManager
 import android.provider.Settings
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -153,7 +154,16 @@ class SettingsViewModel(
     }
 
     fun triggerScreenshot() {
-        VolumeAccessibilityService.instance?.takeScreenshot()
+        val service = VolumeAccessibilityService.instance
+        if (service != null) {
+            service.takeScreenshot()
+        } else {
+            Toast.makeText(
+                context,
+                "Accessibility service not connected – enable it in Settings",
+                Toast.LENGTH_SHORT,
+            ).show()
+        }
     }
 
     // ── Factory ─────────────────────────────────────────────────────────
