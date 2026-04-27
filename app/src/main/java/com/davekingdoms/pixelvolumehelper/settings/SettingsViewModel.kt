@@ -16,6 +16,7 @@ import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
 import com.davekingdoms.pixelvolumehelper.data.model.OverlayAction
 import com.davekingdoms.pixelvolumehelper.data.model.OverlayPosition
 import com.davekingdoms.pixelvolumehelper.data.model.UserPreferences
+import com.davekingdoms.pixelvolumehelper.overlay.OverlayManager
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -117,7 +118,14 @@ class SettingsViewModel(
     // ── Preference setters ──────────────────────────────────────────────
 
     fun setOverlayEnabled(enabled: Boolean) {
-        viewModelScope.launch { preferencesRepository.setOverlayEnabled(enabled) }
+        viewModelScope.launch {
+            preferencesRepository.setOverlayEnabled(enabled)
+            if (enabled) {
+                OverlayManager.start(context)
+            } else {
+                OverlayManager.stop(context)
+            }
+        }
     }
 
     fun setSelectedStream(stream: AudioStream) {
