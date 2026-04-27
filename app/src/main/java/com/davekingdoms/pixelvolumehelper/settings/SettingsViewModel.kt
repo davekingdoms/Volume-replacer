@@ -14,7 +14,6 @@ import com.davekingdoms.pixelvolumehelper.accessibility.VolumeAccessibilityServi
 import com.davekingdoms.pixelvolumehelper.data.PreferencesRepository
 import com.davekingdoms.pixelvolumehelper.data.model.AudioStream
 import com.davekingdoms.pixelvolumehelper.data.model.OverlayAction
-import com.davekingdoms.pixelvolumehelper.data.model.OverlayPosition
 import com.davekingdoms.pixelvolumehelper.data.model.UserPreferences
 import com.davekingdoms.pixelvolumehelper.overlay.OverlayManager
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -138,10 +137,6 @@ class SettingsViewModel(
 
     fun setLongPressAction(action: OverlayAction) {
         viewModelScope.launch { preferencesRepository.setLongPressAction(action) }
-    }
-
-    fun setOverlayPosition(position: OverlayPosition) {
-        viewModelScope.launch { preferencesRepository.setOverlayPosition(position) }
     }
 
     // ── Debug actions ───────────────────────────────────────────────────
