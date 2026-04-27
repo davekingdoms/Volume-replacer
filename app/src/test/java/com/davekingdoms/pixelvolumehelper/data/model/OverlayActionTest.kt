@@ -9,7 +9,7 @@ class OverlayActionTest {
     @Test
     fun `entries contains Screenshot action`() {
         assertTrue(
-            OverlayAction.entries().contains(OverlayAction.Screenshot),
+            OverlayAction.all().contains(OverlayAction.Screenshot),
         )
     }
 
@@ -26,7 +26,7 @@ class OverlayActionTest {
 
     @Test
     fun `all known keys resolve correctly`() {
-        for (action in OverlayAction.entries()) {
+        for (action in OverlayAction.all()) {
             assertEquals(action, OverlayAction.fromKey(action.key))
         }
     }

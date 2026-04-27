@@ -88,15 +88,15 @@ class OverlayActionDispatcherTest {
         val r = Recorder()
         val d = r.build()
 
-        for (action in OverlayAction.entries()) {
+        for (action in OverlayAction.all()) {
             d.dispatch(action)
         }
 
         // Each non-None action should have fired exactly once.
-        val nonNoneCount = OverlayAction.entries().count { it != OverlayAction.None }
+        val nonNoneCount = OverlayAction.all().count { it != OverlayAction.None }
         val totalInvocations = r.openPanel + r.screenshot + r.volumeUp +
             r.volumeDown + r.mute + r.cycleProfile
         assertEquals(nonNoneCount, totalInvocations)
-        assertTrue(OverlayAction.entries().contains(OverlayAction.None))
+        assertTrue(OverlayAction.all().contains(OverlayAction.None))
     }
 }

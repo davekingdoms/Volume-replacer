@@ -118,24 +118,16 @@ fun SettingsScreen(
             DropdownRow(
                 label = "Tap Action",
                 selected = prefs.tapAction.label,
-                options = OverlayAction.entries().map { it.label },
+                options = OverlayAction.all().map { it.label },
                 onSelect = { label ->
-                    OverlayAction.entries().firstOrNull { it.label == label }
+                    OverlayAction.all().firstOrNull { it.label == label }
                         ?.let { viewModel.setTapAction(it) }
                 },
             )
 
-            DropdownRow(
-                label = "Long Press Action",
-                selected = prefs.longPressAction.label,
-                options = OverlayAction.entries().map { it.label },
-                onSelect = { label ->
-                    OverlayAction.entries().firstOrNull { it.label == label }
-                        ?.let { viewModel.setLongPressAction(it) }
-                },
-            )
+            // Overlay position is set by dragging the overlay button (no dropdown needed).
 
-            // ── 3. Debug / test actions ─────────────────────────────────
+            // ── 3. Debug / test actions
             SectionHeader("Debug Actions")
 
             Row(

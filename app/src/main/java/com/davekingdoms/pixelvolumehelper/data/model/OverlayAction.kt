@@ -2,25 +2,27 @@ package com.davekingdoms.pixelvolumehelper.data.model
 
 /**
  * Actions that can be triggered by tapping or long-pressing the overlay button.
+ *
+ * Implemented as an `enum class` instead of a sealed class so that JVM guarantees
+ * complete initialization before any instance is accessed – avoiding the NPE that
+ * can occur when `data object` members of a sealed class are read before the class
+ * initializer has finished running on the ART runtime.
  */
-sealed class OverlayAction(val key: String, val label: String) {
-    data object VolumeUp : OverlayAction("VOLUME_UP", "Volume Up")
-    data object VolumeDown : OverlayAction("VOLUME_DOWN", "Volume Down")
-    data object Mute : OverlayAction("MUTE", "Mute / Unmute")
-    data object OpenPanel : OverlayAction("OPEN_PANEL", "Open Volume Panel")
-    data object Screenshot : OverlayAction("SCREENSHOT", "Screenshot")
-    data object CycleProfile : OverlayAction("CYCLE_PROFILE", "Cycle Profile")
-    data object None : OverlayAction("NONE", "Do Nothing")
+enum class OverlayAction(val key: String, val label: String) {
+    VolumeUp("VOLUME_UP", "Volume Up"),
+    VolumeDown("VOLUME_DOWN", "Volume Down"),
+    Mute("MUTE", "Mute / Unmute"),
+    OpenPanel("OPEN_PANEL", "Open Volume Panel"),
+    Screenshot("SCREENSHOT", "Screenshot"),
+    CycleProfile("CYCLE_PROFILE", "Cycle Profile"),
+    None("NONE", "Do Nothing");
 
     companion object {
-        private val all: List<OverlayAction> = listOf(
-            VolumeUp, VolumeDown, Mute, OpenPanel, Screenshot, CycleProfile, None,
-        )
-
+        /** Returns the entry matching [key], or [OpenPanel] as a safe default. */
         fun fromKey(key: String): OverlayAction =
-            all.firstOrNull { it.key == key } ?: OpenPanel
+            entries.firstOrNull { it.key == key } ?: OpenPanel
 
-        fun entries(): List<OverlayAction> = all
+        /** All available actions as an ordered list (mirrors [entries]). */
+        fun all(): List<OverlayAction> = entries
     }
 }
-
