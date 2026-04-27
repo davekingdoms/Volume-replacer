@@ -2,6 +2,7 @@ package com.davekingdoms.pixelvolumehelper.overlay
 
 import android.content.Context
 import android.content.Intent
+import android.provider.Settings
 
 /**
  * Helper to start / stop [OverlayService] and check permission state.
@@ -9,7 +10,9 @@ import android.content.Intent
 object OverlayManager {
 
     fun start(context: Context) {
-        // TODO: check SYSTEM_ALERT_WINDOW, then startForegroundService
+        if (!Settings.canDrawOverlays(context)) return
+        val intent = Intent(context, OverlayService::class.java)
+        context.startForegroundService(intent)
     }
 
     fun stop(context: Context) {
